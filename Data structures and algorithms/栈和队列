@@ -1,0 +1,291 @@
+1.
+
+#include <stdio.h>
+
+#include <string.h>
+
+int main()
+
+{
+
+char str[128];
+
+int i,len;
+
+gets(str);
+
+len=strlen(str);
+
+if ( str[len-1] != '@' )//结尾应该是'@'
+
+{
+
+ printf("error str:%s\n" , str );
+
+ return -1;
+
+}
+
+len--;
+
+if ( len % 2 == 0 ) //有效的串应该是奇数长度
+
+{
+
+ printf("str:%s is invalid1\n",str );
+
+ return -1;
+
+}
+
+if ( str[len/2] != '&' ) //中间一个字符应该是&
+
+{
+
+ printf("str:%s is invalid2\n",str );
+
+ return -1;
+
+}
+
+for( i=0;i<len/2;i++ )
+
+{
+
+ if ( str[i] != str[len-i-1] )
+
+ {
+
+ printf("str:%s is invalid3\n",str );
+
+ return -1;
+
+ }
+
+}
+
+printf("str:%s is valid string\n",str );
+
+return 0;
+
+}
+
+ 
+
+ 
+
+ 
+
+ 
+
+2.
+
+可能的出栈序列: (14 种)
+
+DCBA CDBA BACD CBDA ADCB CBAD BDCA ACDB BCDA ACBD BCAD ABDC BADC ABCD
+
+不可能的出栈序列: (10 种)
+
+DBCA DBAC DABC DACB DCAB CABD CDAB BDAC CADB ADBC
+
+ 
+
+3.
+
+牺牲一个单元来区分队空和队满，入队时少用一个队列单元，即约定以"队头指针在队尾指针的下一位置作为队满的标志"。假设循环队列的队尾指针是rear，队头是front, 其中QueueSize为循环队列的最大长度:
+
+队满条件为：(rear+1)%QueueSize==front
+
+队空条件为：front==rear
+
+ 
+
+4.
+
+char *RPExpression(char *e)
+
+  /* 返回表达式e的逆波兰式 */
+
+  {
+
+      //栈s1用于存放运算符，栈s2用于存放逆波兰式
+
+      Stack s1,s2;
+
+      InitStack(s1);
+
+      InitStack(s2);   
+
+     
+
+      //假设字符'#'是运算级别最低的运算符，并压入栈s1中
+
+     Push(s1,'#');
+
+    
+
+     //p指针用于遍历传入的字符串，ch用于临时存放字符,length用于计算字符串长度 
+
+     char *p=e,ch;
+
+     int length=0;
+
+     for(;*p!='\0';p++)//逐个字符访问
+
+     {
+
+         switch(*p)
+
+         {
+
+             //遇'('则直接入栈s1
+
+             case '(':
+
+                 Push(s1,*p);
+
+                 break;
+
+             //遇')'则将距离栈s1栈顶的最近的'('之间的运算符，逐个出栈，依次送入栈s2,此时抛弃'('case ')':
+
+                 while(Top(s1)!='(')
+
+                 {
+
+                     Pop(s1,ch);
+
+                     Push(s2,ch);
+
+                 }
+
+                 Pop(s1,ch);
+
+                 break;
+
+             //遇下列运算符，则分情况讨论：
+
+             //1.若当前栈s1的栈顶元素是'('，则当前运算符直接压入栈s1；
+
+             //2.否则，将当前运算符与栈s1的栈顶元素比较，若优先级较栈顶元素大，则直接压入栈s1中,
+
+             //  否则将s1栈顶元素弹出，并压入栈s2中，直到栈顶运算符的优先级别低于当前运算符，然后再将当前运算符压入栈s1中
+
+             case '+':
+
+             case '-':
+
+                 for(ch=Top(s1);ch!='#';ch=Top(s1))
+
+                 {               
+
+                     if(ch=='(')
+
+                     {                       
+
+                         break;
+
+                     }
+
+                     else
+
+                     {
+
+                         Pop(s1,ch);
+
+                         Push(s2,ch);                       
+
+                     }                                         
+
+                 }
+
+                 Push(s1,*p);
+
+                 length++;
+
+                 break;
+
+             case '*':
+
+             case '/':
+
+                 for(ch=Top(s1);ch!='#'&&ch!='+'&&ch!='-';ch=Top(s1))
+
+                 {               
+
+                     if(ch=='(')
+
+                     {                       
+
+                         break;
+
+                     }
+
+                     else
+
+                     {
+
+                         Pop(s1,ch);
+
+                         Push(s2,ch);
+
+                     }                                         
+
+                 }
+
+                 Push(s1,*p);
+
+                 length++;
+
+                 break;
+
+             //遇操作数则直接压入栈s2中
+
+             default:
+
+                 Push(s2,*p);  
+
+                 length++;            
+
+         }
+
+     }   
+
+     //若栈s1非空，则将栈中元素依次弹出并压入栈s2中
+
+      while(!StackEmpty(s1)&&Top(s1)!='#')
+
+     {
+
+         Pop(s1,ch);
+
+         Push(s2,ch);       
+
+     }
+
+     //最后将栈s2输出，逆序排列成字符串;
+
+     char *result;
+
+     result=(char *)malloc(sizeof(char)*(length+1));
+
+     result+=length;
+
+     *result='\0';
+
+     result--;
+
+     for(;!StackEmpty(s2);result--)
+
+     {
+
+         Pop(s2,ch);
+
+         *result=ch;       
+
+     }
+
+     ++result;
+
+     return result;
+
+ }
