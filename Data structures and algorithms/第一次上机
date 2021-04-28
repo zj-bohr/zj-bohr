@@ -1,0 +1,171 @@
+#include<stdio.h>
+#include<iostream>
+using namespace std;
+
+#define OVERFLOW -2
+#define OK 1
+
+typedef struct Lnode {
+int coef;//系数 
+int exp;//指数
+struct Lnode *next;
+}Lnode, *LinkList;
+LinkList L, LA, LB;
+
+int CreateNode(LinkList &L, int n)
+{
+int i;
+LinkList p, s;
+L = (LinkList)malloc(sizeof(Lnode));
+if (!L)
+exit(OVERFLOW);
+p = L;
+for (i = 1; i <= n; i++)
+{
+s = (LinkList)malloc(sizeof(Lnode));
+if (!s)
+exit(OVERFLOW);
+cin >> s->coef;
+cin >> s->exp;
+s->next = NULL;
+p->next = s;
+p = p->next;
+}
+return OK;
+}
+
+
+void AddPloyn(LinkList &LA, LinkList &LB)
+{
+int x;
+LinkList pa, pb, pre, u;
+pre = pa = LA;
+pb = LB;
+pa = pa->next;
+pb = pb->next;
+while (pa&&pb)
+{
+if (pa->exp < pb->exp)
+{
+pre = pa; pa = pa->next;
+}
+else if (pa->exp == pb->exp)
+{
+x = pa->coef + pb->coef;
+if (x == 0)
+{
+pre->next = pa->next; free(pa); pa = pre->next;
+u = pb; pb = pb->next; free(u);
+}
+else
+{
+pa->coef = x; pre = pa; pa = pa->next;
+u = pb; pb = pb->next; free(u);
+}
+}
+else
+{
+u = pb; pb = pb->next; pre->next = u; pre = u; pre->next = pa;
+}
+}
+if (pa == NULL)
+pre->next = pb;
+free(LB);
+}
+
+void reverse(LinkList  LA)
+{
+//将按照幂指数降序链接的一元多项式A就地逆置，转换为按幂指数升序链接。
+LinkList p, q;
+p = LA->next;  LA->next = NULL; //新链表初始化
+while (p != NULL)
+{
+q = p;  p = p->next; //在原链表中摘下*q
+q->next = LA->next;  LA->next = q; //将*q插入新链表表头
+}
+}
+
+
+void DerivList(LinkList LA, LinkList LB)//求导
+{
+Lnode *p;
+p = LA->next;
+Lnode *cur, *rear;
+cur = LB;
+rear = new Lnode;
+
+while (p)
+{
+if (p->coef != 0 && p->exp != 0)
+{
+rear = new Lnode;
+rear->coef = (p->coef) *  (p->exp);
+rear->exp = p->exp - 1;
+rear->next = NULL;
+cur->next = rear;
+cur = rear;
+}
+p = p->next;
+}
+}
+
+int main()
+{
+LinkList t;
+int z, na, nb, nc, res, x;
+beg:cout << "输入LA.lenth" << endl;
+cin >> na;
+cout << "输入LA" << endl;
+CreateNode(LA, na);
+cout << "输入LB.lenth" << endl;
+cin >> nb;
+cout << "输入LB" << endl;
+CreateNode(LB, nb);
+printf("\n请选择您要进行的操作\n1.输出LA\n2.就地逆置LA\n3.对LA求导\n4.计算LA+LB\n5.重新输入\n6.结束程序\n");
+scanf_s("%d", &z);
+switch (z)
+{
+case 1:
+{
+for (t = LA->next; t; t = t->next)
+{
+printf("%d %d ", t->coef, t->exp); printf("\n");
+}
+}break;
+case 2:
+{
+reverse(LA);
+cout << "就地逆置LA" << endl;
+for (t = LA->next; t; t = t->next)
+{
+printf("%d %d", t->coef, t->exp); printf("\n");
+}
+}break;
+case 3:
+{
+DerivList(LA, LB);
+printf("对A求导得:");
+for (t = LB->next; t; t = t->next)
+{
+printf("%d %d ", t->coef, t->exp); printf("\n");
+}
+}break;
+case 4:
+{
+cout << "Add:LA&LB" << endl;
+AddPloyn(LA, LB);
+cout << "LA+LB:" << endl;
+for (t = LA->next; t; t = t->next)
+{
+printf("%d %d ", t->coef, t->exp); printf("\n");
+}
+
+}break;
+case 5:
+{
+goto beg;
+
+}break;
+case 6:break;
+}
+}
