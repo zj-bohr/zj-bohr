@@ -1,0 +1,195 @@
+//完成 hw01_BasicDynamicArray_function-58m.pdf。
+
+//可以把这个作业看成一个填空题，补充缺失的代码，使得该程序没有错误的运行通过。
+
+//作业需要按照一个h和一个cpp文件的形式完成，但是为了在线提交和检查作业方便。请大家提交的时候，把两个文件的内容分开（通过如下的注释方式），代码都粘贴到答案处。
+
+///////////////////// BasicDynamicArray_function.h
+
+int g_arraysize(0); // size of the array
+
+double *p_arraydata(0); // data of the array
+
+
+
+int SetArraySize( int size);
+
+int FreeArray();
+
+int SetValue( int k, double value);
+
+void PrintArray();
+
+
+
+///////////////////// BasicDynamicArray_function.cpp
+
+#include "BasicDynamicArray_function.h"
+
+#include <iostream>
+
+#include <assert.h>
+
+
+
+int main()
+
+{
+
+SetArraySize(2);
+
+assert( 2 == g_arraysize); // test-driven development (TDD)
+
+assert( 0 == p_arraydata[1]);
+
+
+
+SetValue( 0, 1.0);
+
+SetValue( 1, 2.0);
+
+assert( 2.0 == p_arraydata[1]);
+
+
+
+PrintArray();
+
+
+
+FreeArray();
+
+assert ( 0 == g_arraysize);
+
+assert ( 0 == p_arraydata);
+
+
+
+return 0;
+
+}
+
+
+
+//正确答案：
+
+//我的答案：
+
+///////////////////// BasicDynamicArray_function.h
+
+#include <iostream>
+
+#include<assert.h>
+
+
+
+int g_arraysize;// size of the array
+
+double* p_arraydata;// data of the array
+
+
+
+void SetArraySize(int size)
+
+{
+
+    g_arraysize = size;
+
+    p_arraydata = new double[g_arraysize];
+
+}
+
+
+
+void FreeArray()
+
+{
+
+    delete[]p_arraydata;
+
+    g_arraysize = NULL;
+
+    p_arraydata = NULL;
+
+}
+
+
+
+void SetValue(int k, double value)
+
+{
+
+
+
+    *(p_arraydata + k) = value;
+
+}
+
+
+
+void PrintArray()
+
+{
+
+    
+
+    for (int i = 0; i < g_arraysize; i++)
+
+        std::cout << *(p_arraydata + i) << std::endl;
+
+}
+
+
+
+///////////////////// BasicDynamicArray_function.cpp
+
+
+#include"BasicDynamicArray_function.h"
+
+#include <iostream>
+
+#include<assert.h>
+
+
+
+extern int g_arraysize ;//.h文件里初始化
+
+extern double* p_arraydata ;
+
+
+
+int main() 
+
+{
+
+    SetArraySize(2);//初始化
+
+    assert(2 == g_arraysize); // test-driven development (TDD)
+
+    assert(0 == p_arraydata[1]);
+
+
+
+    SetValue(0,1.0 );//赋值
+
+    SetValue(1,2.0);
+
+    assert(2.0 == p_arraydata[1]);//验证赋值是否成功
+
+   
+
+    PrintArray();//输出
+
+   
+
+    FreeArray();//释放内存，删除指针
+
+    assert(0 == g_arraysize);//验证内存是否释放
+
+    assert(0 == p_arraydata);
+
+
+
+    return 0;
+
+}
+
