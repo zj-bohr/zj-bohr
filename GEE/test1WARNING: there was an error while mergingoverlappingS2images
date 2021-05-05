@@ -1,0 +1,63 @@
+import os
+# update the proxy settings
+# os.environ['HTTP_PROXY'] = 'my_proxy_id:proxy_port'
+# os.environ['HTTPS_PROXY'] = 'my_proxy_id:proxy_port'
+os.environ['HTTP_PROXY'] = 'http://127.0.0.1:64287'
+os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:64287'
+
+
+import numpy as np
+import pickle
+import warnings
+warnings.filterwarnings("ignore")
+import matplotlib
+matplotlib.use('Qt5Agg')
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+plt.ion()
+import pandas as pd
+from datetime import datetime
+from coastsat import SDS_download, SDS_preprocess, SDS_shoreline, SDS_tools, SDS_transects
+
+# region of interest (longitude, latitude)
+#polygon = [[[151.2957545, -33.7012561],
+#            [151.297557, -33.7388075],
+#            [151.312234, -33.7390216],
+#            [151.311204, -33.701399],
+#            [151.2957545, -33.7012561]]] 
+polygon = [[[120.016237, 35.847460],[120.016237, 35.844531],[120.040889, 35.844531],[120.040889, 35.847460]]]
+
+# it's recommended to convert the polygon to the smallest rectangle (sides parallel to coordinate axes)       
+polygon = SDS_tools.smallest_rectangle(polygon)
+# date range
+dates = ['2017-12-01', '2018-01-01']
+
+# satellite missions
+sat_list = ['S2']
+# name of the site
+sitename = 'NARRA'
+# directory where the data will be stored
+filepath = os.path.join(os.getcwd(), 'data')
+# put all the inputs into a dictionnary
+inputs = {'polygon': polygon, 'dates': dates, 'sat_list': sat_list, 'sitename': sitename, 'filepath':filepath}
+
+# before downloading the images, check how many images are available for your inputs
+SDS_download.check_images_available(inputs);
+
+Images available between 2017-12-01 and 2018-01-01:
+- In Landsat Tier 1 & Sentinel-2 Level-1C:
+  S2: 10 images
+  Total: 10 images
+  
+# inputs['include_T2'] = True
+metadata = SDS_download.retrieve_images(inputs)
+
+Images available between 2017-12-01 and 2018-01-01:
+- In Landsat Tier 1 & Sentinel-2 Level-1C:
+  S2: 10 images
+  Total: 10 images
+
+Downloading images:
+S2: 5 images
+100%
+WARNING: there was an error while merging overlapping S2 images, please open an issue on Github at https://github.com/kvos/CoastSat/issues and include your script so we can find out what happened.
